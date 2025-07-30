@@ -1,0 +1,13 @@
+{
+	"name": "ONPREM_SQLSERVER_SRC",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_src_onprem",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
