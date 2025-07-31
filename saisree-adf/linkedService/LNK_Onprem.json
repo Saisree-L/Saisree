@@ -1,0 +1,21 @@
+{
+	"name": "LNK_Onprem",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "saisree-sqlserver.database.windows.net",
+			"database": "saisree_db",
+			"encrypt": "optional",
+			"trustServerCertificate": true,
+			"authenticationType": "SQL",
+			"userName": "sai",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJiZjc2YTVjNi1lYmE2LTRmYzItOTdjNC04MDU5MTYwZDg0MWEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "integrationRuntime1",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

@@ -1,0 +1,31 @@
+{
+	"name": "lookup_src_sqlserver",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_SqlServer",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"a": {
+				"type": "string"
+			},
+			"b": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().a",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().b",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
