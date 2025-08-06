@@ -1,0 +1,9 @@
+{
+	"name": "Saisree9",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "c91afc72-c56f-4e41-a6f3-18be747ed9ad",
+		"tenantId": "3a303c58-c919-4dd0-b7f6-c5f7df121258"
+	}
+}
