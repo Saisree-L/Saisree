@@ -1,0 +1,16 @@
+{
+	"name": "lnk_reconfile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_azuresql2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "pipeline_log"
+		}
+	}
+}
