@@ -1,0 +1,16 @@
+{
+	"name": "scd_lnk",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_azuresql2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Customer"
+		}
+	}
+}
