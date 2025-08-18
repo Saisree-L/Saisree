@@ -19,7 +19,22 @@
 					"name": "source2"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "scd_lnk",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "scd_lnk",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
 			"transformations": [
 				{
 					"name": "derivedColumn1"
@@ -29,6 +44,9 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -51,7 +69,8 @@
 				"          Email as string,",
 				"          Phone as string,",
 				"          City as string,",
-				"          Country as string",
+				"          Country as string,",
+				"          hashkey as long",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -63,8 +82,70 @@
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> lookup1",
-				"lookup1 split(isNull(source1@CustomerID)&& notEquals(Hashcode, Hash_key),",
-				"     disjoint: true) ~> split1@(matched, unmatched)"
+				"lookup1 split(!isNull(source2@CustomerID) && (toString(Hashcode) != toString(hashkey))\r",
+				",",
+				"     isNull(source2@CustomerID),",
+				"     disjoint: true) ~> split1@(matched, unmatched)",
+				"split1@matched alterRow(updateIf(true())) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['CustomerID'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CustomerID = split1@matched@CustomerID,",
+				"          FirstName = split1@matched@FirstName,",
+				"          LastName = split1@matched@LastName,",
+				"          Email = split1@matched@Email,",
+				"          Phone = split1@matched@Phone,",
+				"          City = split1@matched@City,",
+				"          Country = split1@matched@Country,",
+				"          ModifiedData,",
+				"          Hashcode,",
+				"          CustomerID = split1@matched@CustomerID,",
+				"          FirstName = split1@matched@FirstName,",
+				"          LastName = split1@matched@LastName,",
+				"          Email = split1@matched@Email,",
+				"          Phone = split1@matched@Phone,",
+				"          City = split1@matched@City,",
+				"          Country = split1@matched@Country,",
+				"          hashkey",
+				"     )) ~> sink1",
+				"split1@unmatched sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CustomerID = split1@unmatched@CustomerID,",
+				"          FirstName = split1@unmatched@FirstName,",
+				"          LastName = split1@unmatched@LastName,",
+				"          Email = split1@unmatched@Email,",
+				"          Phone = split1@unmatched@Phone,",
+				"          City = split1@unmatched@City,",
+				"          Country = split1@unmatched@Country,",
+				"          ModifiedData,",
+				"          Hashcode,",
+				"          CustomerID = split1@unmatched@CustomerID,",
+				"          FirstName = split1@unmatched@FirstName,",
+				"          LastName = split1@unmatched@LastName,",
+				"          Email = split1@unmatched@Email,",
+				"          Phone = split1@unmatched@Phone,",
+				"          City = split1@unmatched@City,",
+				"          Country = split1@unmatched@Country,",
+				"          hashkey",
+				"     )) ~> sink2"
 			]
 		}
 	}
