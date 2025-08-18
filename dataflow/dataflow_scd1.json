@@ -26,6 +26,9 @@
 				},
 				{
 					"name": "lookup1"
+				},
+				{
+					"name": "split1"
 				}
 			],
 			"scriptLines": [
@@ -56,10 +59,12 @@
 				"     format: 'table') ~> source2",
 				"source1 derive(ModifiedData = currentUTC(),",
 				"          Hashcode = toBinary(md5(City,Phone,Email))) ~> derivedColumn1",
-				"source1, source2 lookup(source1@CustomerID == ERROR_FUNCTION(''),",
+				"derivedColumn1, source2 lookup(source1@CustomerID == source2@CustomerID,",
 				"     multiple: false,",
 				"     pickup: 'any',",
-				"     broadcast: 'auto')~> lookup1"
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 split(isNull(source1@CustomerID)&& notEquals(Hashcode, Hash_key),",
+				"     disjoint: true) ~> split1@(matched, unmatched)"
 			]
 		}
 	}
