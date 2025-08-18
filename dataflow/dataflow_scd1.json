@@ -25,14 +25,14 @@
 						"referenceName": "scd_lnk",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "updatedata"
 				},
 				{
 					"dataset": {
 						"referenceName": "scd_lnk",
 						"type": "DatasetReference"
 					},
-					"name": "sink2"
+					"name": "insertdata"
 				}
 			],
 			"transformations": [
@@ -116,7 +116,7 @@
 				"          City = split1@matched@City,",
 				"          Country = split1@matched@Country,",
 				"          hashkey",
-				"     )) ~> sink1",
+				"     )) ~> updatedata",
 				"split1@unmatched sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -145,7 +145,7 @@
 				"          City = split1@unmatched@City,",
 				"          Country = split1@unmatched@Country,",
 				"          hashkey",
-				"     )) ~> sink2"
+				"     )) ~> insertdata"
 			]
 		}
 	}
