@@ -13,6 +13,55 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/ONPREM_SQLSERVER_SRC')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lnk_src_onprem",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lnk_SqlServer",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "name",
+						"type": "varchar"
+					},
+					{
+						"name": "address",
+						"type": "char"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "students"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/lookup_src_sqlserver')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -74,6 +123,177 @@
 						"value": "@dataset().y",
 						"type": "Expression"
 					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_scd1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "scd_adls",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "scd_lnk",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "scd_lnk",
+								"type": "DatasetReference"
+							},
+							"name": "updatedata"
+						},
+						{
+							"dataset": {
+								"referenceName": "scd_lnk",
+								"type": "DatasetReference"
+							},
+							"name": "insertdata"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "alterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CustomerID as integer,",
+						"          FirstName as string,",
+						"          LastName as string,",
+						"          Email as string,",
+						"          Phone as string,",
+						"          City as string,",
+						"          Country as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          CustomerID as integer,",
+						"          FirstName as string,",
+						"          LastName as string,",
+						"          Email as string,",
+						"          Phone as string,",
+						"          City as string,",
+						"          Country as string,",
+						"          hashkey as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source2",
+						"source1 derive(ModifiedData = currentUTC(),",
+						"          Hashcode = toBinary(md5(City,Phone,Email))) ~> derivedColumn1",
+						"derivedColumn1, source2 lookup(source1@CustomerID == source2@CustomerID,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1 split(!isNull(source2@CustomerID) && (toString(Hashcode) != toString(hashkey))\r",
+						",",
+						"     isNull(source2@CustomerID),",
+						"     disjoint: true) ~> split1@(matched, unmatched)",
+						"split1@matched alterRow(updateIf(true())) ~> alterRow1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          CustomerID as integer,",
+						"          FirstName as string,",
+						"          LastName as string,",
+						"          Email as string,",
+						"          Phone as string,",
+						"          City as string,",
+						"          Country as string,",
+						"          hashkey as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['CustomerID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          CustomerID = split1@matched@CustomerID,",
+						"          FirstName = split1@matched@FirstName,",
+						"          LastName = split1@matched@LastName,",
+						"          Email = split1@matched@Email,",
+						"          Phone = split1@matched@Phone,",
+						"          City = split1@matched@City,",
+						"          Country = split1@matched@Country,",
+						"          hashkey = Hashcode,",
+						"          CustomerID = split1@matched@CustomerID,",
+						"          FirstName = split1@matched@FirstName,",
+						"          LastName = split1@matched@LastName,",
+						"          Email = split1@matched@Email,",
+						"          Phone = split1@matched@Phone,",
+						"          City = split1@matched@City,",
+						"          Country = split1@matched@Country",
+						"     )) ~> updatedata",
+						"split1@unmatched sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          CustomerID as integer,",
+						"          FirstName as string,",
+						"          LastName as string,",
+						"          Email as string,",
+						"          Phone as string,",
+						"          City as string,",
+						"          Country as string,",
+						"          hashkey as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          CustomerID = split1@unmatched@CustomerID,",
+						"          FirstName = split1@unmatched@FirstName,",
+						"          LastName = split1@unmatched@LastName,",
+						"          Email = split1@unmatched@Email,",
+						"          Phone = split1@unmatched@Phone,",
+						"          City = split1@unmatched@City,",
+						"          Country = split1@unmatched@Country,",
+						"          hashkey = Hashcode,",
+						"          CustomerID = split1@unmatched@CustomerID,",
+						"          FirstName = split1@unmatched@FirstName,",
+						"          LastName = split1@unmatched@LastName,",
+						"          Email = split1@unmatched@Email,",
+						"          Phone = split1@unmatched@Phone,",
+						"          City = split1@unmatched@City,",
+						"          Country = split1@unmatched@Country",
+						"     )) ~> insertdata"
+					]
 				}
 			},
 			"dependsOn": []
@@ -145,7 +365,9 @@
 				"annotations": [],
 				"lastPublishTime": "2025-07-23T11:26:15Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SqlServerTable1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pl_lookup_ir_t2at')]",
@@ -365,8 +587,58 @@
 				"lastPublishTime": "2025-07-22T11:19:37Z"
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ONPREM_SQLSERVER_SRC')]",
 				"[concat(variables('factoryId'), '/datasets/lookup_src_sqlserver')]",
 				"[concat(variables('factoryId'), '/datasets/src_ds_onprem')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_scd1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow_scd1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"source2": {},
+									"updatedata": {},
+									"insertdata": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow_scd1')]"
 			]
 		}
 	]
