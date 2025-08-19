@@ -213,8 +213,7 @@
 						"     multiple: false,",
 						"     pickup: 'any',",
 						"     broadcast: 'auto')~> lookup1",
-						"lookup1 split(!isNull(source2@CustomerID) && (toString(Hashcode) != toString(hashkey))\r",
-						",",
+						"lookup1 split(!isNull(source2@CustomerID) && (toString(Hashcode) != toString(hashkey)),",
 						"     isNull(source2@CustomerID),",
 						"     disjoint: true) ~> split1@(matched, unmatched)",
 						"split1@matched alterRow(updateIf(true())) ~> alterRow1",
@@ -620,8 +619,7 @@
 									"source2": {},
 									"updatedata": {},
 									"insertdata": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {

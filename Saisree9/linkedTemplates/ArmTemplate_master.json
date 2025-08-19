@@ -230,9 +230,6 @@
 					"lnk_SqlServer_password": {
 						"value": "[parameters('lnk_SqlServer_password')]"
 					},
-					"lnk_src_onprem_password": {
-						"value": "[parameters('lnk_src_onprem_password')]"
-					},
 					"LNK_Onprem_properties_typeProperties_server": {
 						"value": "[parameters('LNK_Onprem_properties_typeProperties_server')]"
 					},
@@ -250,15 +247,6 @@
 					},
 					"lnk_SqlServer_properties_typeProperties_userName": {
 						"value": "[parameters('lnk_SqlServer_properties_typeProperties_userName')]"
-					},
-					"lnk_src_onprem_properties_typeProperties_server": {
-						"value": "[parameters('lnk_src_onprem_properties_typeProperties_server')]"
-					},
-					"lnk_src_onprem_properties_typeProperties_database": {
-						"value": "[parameters('lnk_src_onprem_properties_typeProperties_database')]"
-					},
-					"lnk_src_onprem_properties_typeProperties_userName": {
-						"value": "[parameters('lnk_src_onprem_properties_typeProperties_userName')]"
 					}
 				}
 			},
@@ -279,6 +267,18 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"lnk_src_onprem_password": {
+						"value": "[parameters('lnk_src_onprem_password')]"
+					},
+					"lnk_src_onprem_properties_typeProperties_server": {
+						"value": "[parameters('lnk_src_onprem_properties_typeProperties_server')]"
+					},
+					"lnk_src_onprem_properties_typeProperties_database": {
+						"value": "[parameters('lnk_src_onprem_properties_typeProperties_database')]"
+					},
+					"lnk_src_onprem_properties_typeProperties_userName": {
+						"value": "[parameters('lnk_src_onprem_properties_typeProperties_userName')]"
 					}
 				}
 			},

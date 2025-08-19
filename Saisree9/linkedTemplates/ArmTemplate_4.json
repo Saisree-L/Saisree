@@ -6,6 +6,22 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "Saisree9"
+		},
+		"lnk_src_onprem_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'lnk_src_onprem'"
+		},
+		"lnk_src_onprem_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "LAPTOP-FKLSAV33"
+		},
+		"lnk_src_onprem_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "AdventureWorks2022"
+		},
+		"lnk_src_onprem_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sai"
 		}
 	},
 	"variables": {
@@ -13,54 +29,27 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/scd_lnk')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/lnk_src_onprem')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lnk_azuresql2",
-					"type": "LinkedServiceReference"
-				},
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "CustomerID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "FirstName",
-						"type": "varchar"
-					},
-					{
-						"name": "LastName",
-						"type": "varchar"
-					},
-					{
-						"name": "Email",
-						"type": "varchar"
-					},
-					{
-						"name": "Phone",
-						"type": "varchar"
-					},
-					{
-						"name": "City",
-						"type": "varchar"
-					},
-					{
-						"name": "Country",
-						"type": "varchar"
-					},
-					{
-						"name": "hashkey",
-						"type": "varchar"
-					}
-				],
+				"type": "SqlServer",
 				"typeProperties": {
-					"schema": "dbo",
-					"table": "Customer"
+					"server": "[parameters('lnk_src_onprem_properties_typeProperties_server')]",
+					"database": "[parameters('lnk_src_onprem_properties_typeProperties_database')]",
+					"encrypt": "optional",
+					"trustServerCertificate": true,
+					"authenticationType": "SQL",
+					"userName": "[parameters('lnk_src_onprem_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('lnk_src_onprem_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "integrationRuntime1",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": []
