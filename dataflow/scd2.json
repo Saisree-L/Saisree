@@ -120,7 +120,7 @@
 				"          City = source1@City,",
 				"          Country = source1@Country,",
 				"          HashKey = HashKey1,",
-				"          ModifiedDate = derivedColumn1@ModifiedDate,",
+				"          ModifiedDate = {ModifiedDate },",
 				"          IsActive = IsActive1",
 				"     )) ~> sink1"
 			]
