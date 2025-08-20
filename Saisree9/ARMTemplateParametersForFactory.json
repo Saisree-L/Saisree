@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "Saisree9"
 		},
+		"AzureSqlDatabase1_password": {
+			"value": ""
+		},
 		"LNK_Onprem_password": {
 			"value": ""
 		},
@@ -25,6 +28,15 @@
 		},
 		"lnk_src_onprem_password": {
 			"value": ""
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"value": "db-soniyaserver2.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"value": "Soniya2"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"value": "Soniya2"
 		},
 		"LNK_Onprem_properties_typeProperties_server": {
 			"value": "saisree-sqlserver.database.windows.net"

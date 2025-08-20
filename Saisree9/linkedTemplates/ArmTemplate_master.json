@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "Saisree9"
 		},
+		"AzureSqlDatabase1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzureSqlDatabase1'"
+		},
 		"LNK_Onprem_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'LNK_Onprem'"
@@ -34,6 +38,18 @@
 		"lnk_src_onprem_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'lnk_src_onprem'"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "db-soniyaserver2.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "Soniya2"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "Soniya2"
 		},
 		"LNK_Onprem_properties_typeProperties_server": {
 			"type": "string",
@@ -130,6 +146,9 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureSqlDatabase1_password": {
+						"value": "[parameters('AzureSqlDatabase1_password')]"
+					},
 					"lnk_adls_accountKey": {
 						"value": "[parameters('lnk_adls_accountKey')]"
 					},
@@ -141,6 +160,15 @@
 					},
 					"lnk_azuresql2_password": {
 						"value": "[parameters('lnk_azuresql2_password')]"
+					},
+					"AzureSqlDatabase1_properties_typeProperties_server": {
+						"value": "[parameters('AzureSqlDatabase1_properties_typeProperties_server')]"
+					},
+					"AzureSqlDatabase1_properties_typeProperties_database": {
+						"value": "[parameters('AzureSqlDatabase1_properties_typeProperties_database')]"
+					},
+					"AzureSqlDatabase1_properties_typeProperties_userName": {
+						"value": "[parameters('AzureSqlDatabase1_properties_typeProperties_userName')]"
 					},
 					"lnk_adls_properties_typeProperties_url": {
 						"value": "[parameters('lnk_adls_properties_typeProperties_url')]"
@@ -223,30 +251,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"LNK_Onprem_password": {
-						"value": "[parameters('LNK_Onprem_password')]"
-					},
-					"lnk_SqlServer_password": {
-						"value": "[parameters('lnk_SqlServer_password')]"
-					},
-					"LNK_Onprem_properties_typeProperties_server": {
-						"value": "[parameters('LNK_Onprem_properties_typeProperties_server')]"
-					},
-					"LNK_Onprem_properties_typeProperties_database": {
-						"value": "[parameters('LNK_Onprem_properties_typeProperties_database')]"
-					},
-					"LNK_Onprem_properties_typeProperties_userName": {
-						"value": "[parameters('LNK_Onprem_properties_typeProperties_userName')]"
-					},
-					"lnk_SqlServer_properties_typeProperties_server": {
-						"value": "[parameters('lnk_SqlServer_properties_typeProperties_server')]"
-					},
-					"lnk_SqlServer_properties_typeProperties_database": {
-						"value": "[parameters('lnk_SqlServer_properties_typeProperties_database')]"
-					},
-					"lnk_SqlServer_properties_typeProperties_userName": {
-						"value": "[parameters('lnk_SqlServer_properties_typeProperties_userName')]"
 					}
 				}
 			},
@@ -268,8 +272,32 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"LNK_Onprem_password": {
+						"value": "[parameters('LNK_Onprem_password')]"
+					},
+					"lnk_SqlServer_password": {
+						"value": "[parameters('lnk_SqlServer_password')]"
+					},
 					"lnk_src_onprem_password": {
 						"value": "[parameters('lnk_src_onprem_password')]"
+					},
+					"LNK_Onprem_properties_typeProperties_server": {
+						"value": "[parameters('LNK_Onprem_properties_typeProperties_server')]"
+					},
+					"LNK_Onprem_properties_typeProperties_database": {
+						"value": "[parameters('LNK_Onprem_properties_typeProperties_database')]"
+					},
+					"LNK_Onprem_properties_typeProperties_userName": {
+						"value": "[parameters('LNK_Onprem_properties_typeProperties_userName')]"
+					},
+					"lnk_SqlServer_properties_typeProperties_server": {
+						"value": "[parameters('lnk_SqlServer_properties_typeProperties_server')]"
+					},
+					"lnk_SqlServer_properties_typeProperties_database": {
+						"value": "[parameters('lnk_SqlServer_properties_typeProperties_database')]"
+					},
+					"lnk_SqlServer_properties_typeProperties_userName": {
+						"value": "[parameters('lnk_SqlServer_properties_typeProperties_userName')]"
 					},
 					"lnk_src_onprem_properties_typeProperties_server": {
 						"value": "[parameters('lnk_src_onprem_properties_typeProperties_server')]"
