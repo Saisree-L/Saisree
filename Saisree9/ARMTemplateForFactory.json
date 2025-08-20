@@ -6127,7 +6127,7 @@
 						"     insertable:true,",
 						"     updateable:true,",
 						"     upsertable:false,",
-						"     keys:['IsActive'],",
+						"     keys:['CustomerID'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
