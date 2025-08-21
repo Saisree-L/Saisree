@@ -53,6 +53,9 @@
 				},
 				{
 					"name": "alterRow2"
+				},
+				{
+					"name": "filter2"
 				}
 			],
 			"scriptLines": [
@@ -90,14 +93,14 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"source2 filter(equals(IsActive, true())) ~> filter1",
-				"derivedColumn1 alterRow(insertIf(isNull(source2@CustomerID)),",
-				"     insertIf(!isNull(source2@CustomerID)&&HashKey!=HashKey1),",
-				"     insertIf(!(HashKey==HashKey1))) ~> alterRow1",
+				"filter2 alterRow(insertIf(isNull(source2@CustomerID)),",
+				"     insertIf(!isNull(source2@CustomerID)&&HashKey!=HashKey1)) ~> alterRow1",
 				"join1 derive({ModifiedDate } = currentUTC(),",
 				"          HashKey1 = md5(source1@Email,source1@Phone,source1@City,source1@Country),",
 				"          IsActive1 = true()) ~> derivedColumn1",
 				"derivedColumn1 derive(IsActive1 = false()) ~> derivedColumn2",
 				"derivedColumn2 alterRow(updateIf(!isNull(source2@CustomerID)&&HashKey!=HashKey1)) ~> alterRow2",
+				"derivedColumn1 filter(coalesce(HashKey,'0')!=HashKey1) ~> filter2",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
