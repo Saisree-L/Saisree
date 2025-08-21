@@ -419,6 +419,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable77",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
 						}
 					],
 					"transformations": [
@@ -436,6 +443,12 @@
 						},
 						{
 							"name": "derivedColumn2"
+						},
+						{
+							"name": "alterRow2"
+						},
+						{
+							"name": "filter2"
 						}
 					],
 					"scriptLines": [
@@ -473,12 +486,14 @@
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
 						"source2 filter(equals(IsActive, true())) ~> filter1",
-						"derivedColumn2 alterRow(insertIf(isNull(source2@CustomerID)),",
-						"     updateIf(!IsActive1),",
+						"filter2 alterRow(insertIf(isNull(source2@CustomerID)),",
 						"     insertIf(!isNull(source2@CustomerID)&&HashKey!=HashKey1)) ~> alterRow1",
 						"join1 derive({ModifiedDate } = currentUTC(),",
-						"          HashKey1 = md5(source1@Email,source1@Phone,source1@City,source1@Country)) ~> derivedColumn1",
-						"derivedColumn1 derive(IsActive1 = iif((!isNull(source2@CustomerID)) && (HashKey1 != HashKey), false(), true())) ~> derivedColumn2",
+						"          HashKey1 = md5(source1@Email,source1@Phone,source1@City,source1@Country),",
+						"          IsActive1 = true()) ~> derivedColumn1",
+						"derivedColumn1 derive(IsActive1 = false()) ~> derivedColumn2",
+						"derivedColumn2 alterRow(updateIf(!isNull(source2@CustomerID)&&HashKey!=HashKey1)) ~> alterRow2",
+						"derivedColumn1 filter(coalesce(HashKey,'0')!=HashKey1) ~> filter2",
 						"alterRow1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -495,12 +510,12 @@
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
-						"     updateable:true,",
+						"     updateable:false,",
 						"     upsertable:false,",
-						"     keys:['CustomerID'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 2,",
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
 						"          CustomerID = source1@CustomerID,",
@@ -513,7 +528,35 @@
 						"          HashKey = HashKey1,",
 						"          ModifiedDate = {ModifiedDate },",
 						"          IsActive = IsActive1",
-						"     )) ~> sink1"
+						"     )) ~> sink1",
+						"alterRow2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          CustomerID as integer,",
+						"          FirstName as string,",
+						"          LastName as string,",
+						"          Email as string,",
+						"          Phone as string,",
+						"          City as string,",
+						"          Country as string,",
+						"          HashKey as string,",
+						"          ModifiedDate as date,",
+						"          IsActive as boolean",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['CustomerID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          CustomerID = source2@CustomerID,",
+						"          IsActive = IsActive1",
+						"     )) ~> sink2"
 					]
 				}
 			},
@@ -887,7 +930,8 @@
 								"datasetParameters": {
 									"source1": {},
 									"source2": {},
-									"sink1": {}
+									"sink1": {},
+									"sink2": {}
 								}
 							},
 							"staging": {},
